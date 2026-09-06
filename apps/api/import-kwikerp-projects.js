@@ -45,7 +45,7 @@ const SRC_PROJECTS = [
   { src_id: 18, name: 'Data Governance Measures — Implementation & Monitoring' },
   { src_id: 19, name: 'Monthly User Access Audit & Monitoring Dashboard Review' },
   { src_id: 20, name: 'Platform Tooling Expansion for Data Scientists & Analysts' },
-  { src_id: 21, name: 'GKK Fellowship Program' },
+  { src_id: 21, name: 'Iribatech Fellowship Program' },
   { src_id: 22, name: 'HEC Accreditation' },
   { src_id: 23, name: 'e-Buzima' },
   { src_id: 24, name: 'Kwik social' },
@@ -133,7 +133,7 @@ function dbConnection() {
   return {
     host: process.env.DB_HOST || 'localhost',
     port: Number(process.env.DB_PORT) || 3306,
-    database: process.env.DB_NAME || 'gkkerp',
+    database: process.env.DB_NAME || 'iribatech',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
     ...(socketPath ? { socketPath } : {}),
@@ -172,7 +172,7 @@ async function resolveCompany(db) {
   if (withProjects?.company_id) {
     return db('companies').where({ id: withProjects.company_id }).first();
   }
-  return (await db('companies').where({ slug: 'gkk' }).first())
+  return (await db('companies').where({ slug: 'iribatech' }).first())
     || (await db('companies').where({ slug: 'kwikkoders' }).first())
     || db('companies').orderBy('created_at').first();
 }

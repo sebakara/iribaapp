@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Full company import: kwikerpnw.sql → GKK ERP
+ * Full company import: kwikerpnw.sql → Iribatech
  *
  * Creates (or reuses) the KwikKoders company and imports:
  *   1. Company
@@ -18,7 +18,7 @@
  *   node apps/api/import-kwikerpnw.js
  *
  * Env: DB_HOST / DB_PORT / DB_USER / DB_PASSWORD / DB_NAME
- *      Falls back to kwikcomp / Kwikops@123 / gkkerp on localhost.
+ *      Falls back to kwikcomp / Kwikops@123 / iribatech on localhost.
  */
 
 const path = require('path');
@@ -258,7 +258,7 @@ const SRC_WORK_LOCATIONS = [
   { name: 'Home',                     type: 'home',   address: null                              },
   { name: 'Building 1, Second Floor', type: 'office', address: null                              },
   { name: 'Other',                    type: 'other',  address: null                              },
-  { name: 'GKK Office',               type: 'office', address: '17 KG 37 Avenue, Kigali, Rwanda' },
+  { name: 'Iribatech Office',               type: 'office', address: '17 KG 37 Avenue, Kigali, Rwanda' },
 ];
 
 // ── Projects ──────────────────────────────────────────────────────────────────
@@ -284,7 +284,7 @@ const SRC_PROJECTS = [
   { src_id: 18, name: 'Data Governance Measures — Implementation & Monitor' },
   { src_id: 19, name: 'Monthly User Access Audit & Monitoring Dashboard'    },
   { src_id: 20, name: 'Platform Tooling Expansion for Data Scientists'      },
-  { src_id: 21, name: 'GKK Fellowship Program'                              },
+  { src_id: 21, name: 'Iribatech Fellowship Program'                              },
   { src_id: 22, name: 'HEC Accreditation'                                   },
   { src_id: 23, name: 'e-Buzima'                                            },
   { src_id: 24, name: 'Kwik Social'                                         },
@@ -297,7 +297,7 @@ const COLORS = [
   '#60a5fa','#c084fc','#f472b6','#4ade80','#38bdf8','#a78bfa',
 ];
 
-// state → GKK status
+// state → Iribatech status
 const STATE_MAP = { in_progress: 'in_progress', approved: 'done', done: 'done' };
 
 const SRC_TASKS = [
@@ -345,7 +345,7 @@ async function main() {
       port:     Number(process.env.DB_PORT || 3306),
       user:     process.env.DB_USER     || 'kwikcomp',
       password: process.env.DB_PASSWORD || 'Kwikops@123',
-      database: process.env.DB_NAME     || 'gkkerp',
+      database: process.env.DB_NAME     || 'iribatech',
     },
   });
 

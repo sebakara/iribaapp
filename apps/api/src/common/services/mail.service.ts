@@ -30,7 +30,7 @@ export class MailService {
       <table width="560" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);">
         <tr>
           <td style="background:#4f46e5;padding:32px 40px;">
-            <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;">GKK ERP</h1>
+            <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;">Iribatech</h1>
             <p style="margin:4px 0 0;color:#c7d2fe;font-size:14px;">Password Reset</p>
           </td>
         </tr>
@@ -59,7 +59,7 @@ export class MailService {
         <tr>
           <td style="padding:20px 40px;border-top:1px solid #f3f4f6;">
             <p style="margin:0;color:#9ca3af;font-size:12px;">
-              © ${new Date().getFullYear()} GKK ERP · This is an automated email, please do not reply.
+              © ${new Date().getFullYear()} Iribatech · This is an automated email, please do not reply.
             </p>
           </td>
         </tr>
@@ -71,9 +71,9 @@ export class MailService {
 
     try {
       await this.transporter.sendMail({
-        from: `"GKK ERP" <${this.config.get('SMTP_USER')}>`,
+        from: `"Iribatech" <${this.config.get('SMTP_USER')}>`,
         to: opts.to,
-        subject: 'Reset your GKK ERP password',
+        subject: 'Reset your Iribatech password',
         html,
       });
       this.logger.log(`Password reset email sent to ${opts.to}`);
@@ -109,7 +109,7 @@ export class MailService {
         <tr>
           <td style="padding:20px 40px;border-top:1px solid #f3f4f6;">
             <p style="margin:0;color:#9ca3af;font-size:12px;">
-              © ${new Date().getFullYear()} GKK ERP ·
+              © ${new Date().getFullYear()} Iribatech ·
               You are receiving this because you are a registered contact.
             </p>
           </td>
@@ -121,7 +121,7 @@ export class MailService {
 </html>`;
 
     await this.transporter.sendMail({
-      from: `"GKK ERP" <${this.config.get('SMTP_USER')}>`,
+      from: `"Iribatech" <${this.config.get('SMTP_USER')}>`,
       to: opts.to,
       subject: opts.subject,
       html,
@@ -169,7 +169,7 @@ export class MailService {
         <tr>
           <td style="padding:20px 40px;border-top:1px solid #f3f4f6;">
             <p style="margin:0;color:#9ca3af;font-size:12px;">
-              © ${new Date().getFullYear()} ${opts.companyName} · Powered by GKK ERP
+              © ${new Date().getFullYear()} ${opts.companyName} · Powered by Iribatech
             </p>
           </td>
         </tr>

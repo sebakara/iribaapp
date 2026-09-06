@@ -1,5 +1,5 @@
 {
-  "name": "gkkerp",
+  "name": "iribatech",
   "private": true,
   "packageManager": "pnpm@10.15.0",
   "engines": {
@@ -7,11 +7,11 @@
     "pnpm": ">=9"
   },
   "scripts": {
-    "dev": "pnpm --parallel --filter @gkkerp/api --filter @gkkerp/web dev",
+    "dev": "pnpm --parallel --filter @iribatech/api --filter @iribatech/web dev",
     "build": "pnpm -r --if-present build",
-    "db:migrate": "pnpm --filter @gkkerp/api migrate",
-    "db:migrate:make": "pnpm --filter @gkkerp/api migrate:make",
-    "db:seed": "pnpm --filter @gkkerp/api seed",
-    "db:rollback": "pnpm --filter @gkkerp/api migrate:rollback"
+    "db:migrate": "pnpm --filter @iribatech/api migrate",
+    "db:migrate:make": "pnpm --filter @iribatech/api migrate:make",
+    "db:seed": "pnpm --filter @iribatech/api seed",
+    "db:rollback": "pnpm --filter @iribatech/api migrate:rollback"
   }
 }

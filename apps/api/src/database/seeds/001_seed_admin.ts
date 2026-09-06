@@ -85,8 +85,8 @@ export async function seed(knex: Knex): Promise<void> {
   const companyId = uuid();
   await knex('companies').insert({
     id: companyId,
-    name: 'Iriba',
-    slug: 'iriba',
+    name: 'Iribatech',
+    slug: 'iribatech',
     plan: 'pro',
   });
 
@@ -122,7 +122,7 @@ export async function seed(knex: Knex): Promise<void> {
       id: adminId,
       company_id: companyId,
       department_id: deptEngId,
-      email: 'admin@iriba.app',
+      email: 'admin@iribatech.com',
       password_hash: pw,
       first_name: 'Alex',
       last_name: 'Morgan',
@@ -134,7 +134,7 @@ export async function seed(knex: Knex): Promise<void> {
       id: ceoId,
       company_id: companyId,
       department_id: deptOpsId,
-      email: 'ceo@iriba.app',
+      email: 'ceo@iribatech.com',
       password_hash: pw,
       first_name: 'Jordan',
       last_name: 'Blake',
@@ -146,7 +146,7 @@ export async function seed(knex: Knex): Promise<void> {
       id: hrMgrId,
       company_id: companyId,
       department_id: deptMgmtId,
-      email: 'hr@iriba.app',
+      email: 'hr@iribatech.com',
       password_hash: pw,
       first_name: 'Priya',
       last_name: 'Sharma',
@@ -158,7 +158,7 @@ export async function seed(knex: Knex): Promise<void> {
       id: productMgrId,
       company_id: companyId,
       department_id: deptMgmtId,
-      email: 'product@iriba.app',
+      email: 'product@iribatech.com',
       password_hash: pw,
       first_name: 'Sam',
       last_name: 'Rivera',
@@ -174,16 +174,16 @@ export async function seed(knex: Knex): Promise<void> {
   const devPw = await hash('Dev@1234');
 
   const developers: { id: string; first_name: string; last_name: string; email: string; job_title: string }[] = [
-    { id: uuid(), first_name: 'Liam',    last_name: 'Chen',       email: 'liam.chen@iriba.app',       job_title: 'Senior Frontend Developer'  },
-    { id: uuid(), first_name: 'Aisha',   last_name: 'Diallo',     email: 'aisha.diallo@iriba.app',     job_title: 'Backend Developer'           },
-    { id: uuid(), first_name: 'Carlos',  last_name: 'Mendoza',    email: 'carlos.mendoza@iriba.app',   job_title: 'Full-Stack Developer'        },
-    { id: uuid(), first_name: 'Yuki',    last_name: 'Tanaka',     email: 'yuki.tanaka@iriba.app',      job_title: 'Mobile Developer'            },
-    { id: uuid(), first_name: 'Fatima',  last_name: 'Al-Rashid',  email: 'fatima.alrashid@iriba.app', job_title: 'DevOps Engineer'             },
-    { id: uuid(), first_name: 'Noah',    last_name: 'Williams',   email: 'noah.williams@iriba.app',    job_title: 'Backend Developer'           },
-    { id: uuid(), first_name: 'Mei',     last_name: 'Lin',        email: 'mei.lin@iriba.app',          job_title: 'Frontend Developer'          },
-    { id: uuid(), first_name: 'Kofi',    last_name: 'Asante',     email: 'kofi.asante@iriba.app',      job_title: 'QA Engineer'                 },
-    { id: uuid(), first_name: 'Sofia',   last_name: 'Petrov',     email: 'sofia.petrov@iriba.app',     job_title: 'Full-Stack Developer'        },
-    { id: uuid(), first_name: 'Marcus',  last_name: 'Thompson',   email: 'marcus.thompson@iriba.app',  job_title: 'Senior Backend Developer'   },
+    { id: uuid(), first_name: 'Liam',    last_name: 'Chen',       email: 'liam.chen@iribatech.com',       job_title: 'Senior Frontend Developer'  },
+    { id: uuid(), first_name: 'Aisha',   last_name: 'Diallo',     email: 'aisha.diallo@iribatech.com',     job_title: 'Backend Developer'           },
+    { id: uuid(), first_name: 'Carlos',  last_name: 'Mendoza',    email: 'carlos.mendoza@iribatech.com',   job_title: 'Full-Stack Developer'        },
+    { id: uuid(), first_name: 'Yuki',    last_name: 'Tanaka',     email: 'yuki.tanaka@iribatech.com',      job_title: 'Mobile Developer'            },
+    { id: uuid(), first_name: 'Fatima',  last_name: 'Al-Rashid',  email: 'fatima.alrashid@iribatech.com', job_title: 'DevOps Engineer'             },
+    { id: uuid(), first_name: 'Noah',    last_name: 'Williams',   email: 'noah.williams@iribatech.com',    job_title: 'Backend Developer'           },
+    { id: uuid(), first_name: 'Mei',     last_name: 'Lin',        email: 'mei.lin@iribatech.com',          job_title: 'Frontend Developer'          },
+    { id: uuid(), first_name: 'Kofi',    last_name: 'Asante',     email: 'kofi.asante@iribatech.com',      job_title: 'QA Engineer'                 },
+    { id: uuid(), first_name: 'Sofia',   last_name: 'Petrov',     email: 'sofia.petrov@iribatech.com',     job_title: 'Full-Stack Developer'        },
+    { id: uuid(), first_name: 'Marcus',  last_name: 'Thompson',   email: 'marcus.thompson@iribatech.com',  job_title: 'Senior Backend Developer'   },
   ];
 
   await knex('users').insert(
@@ -457,8 +457,8 @@ export async function seed(knex: Knex): Promise<void> {
       id: uuid(),
       company_id: companyId,
       author_id: ceoId,
-      title: 'Welcome to Iriba!',
-      body: 'We are excited to launch the Iriba workspace. All teams should update their profiles and join their respective projects. Please reach out to HR for any onboarding questions.',
+      title: 'Welcome to Iribatech!',
+      body: 'We are excited to launch the Iribatech workspace. All teams should update their profiles and join their respective projects. Please reach out to HR for any onboarding questions.',
       is_pinned: true,
       created_at: new Date(Date.now() - 5 * 86400000),
     },
@@ -547,29 +547,29 @@ export async function seed(knex: Knex): Promise<void> {
   await knex('standup_notes').insert(noteRows);
 
   console.log(`
-✅ Iriba seed complete!
+✅ Iribatech seed complete!
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   MANAGEMENT (password: Admin@1234)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  admin@iriba.app       Alex Morgan    CTO (admin)
-  ceo@iriba.app         Jordan Blake   CEO (admin)
-  hr@iriba.app          Priya Sharma   HR Manager (manager)
-  product@iriba.app     Sam Rivera     Product Manager (manager)
+  admin@iribatech.com       Alex Morgan    CTO (admin)
+  ceo@iribatech.com         Jordan Blake   CEO (admin)
+  hr@iribatech.com          Priya Sharma   HR Manager (manager)
+  product@iribatech.com     Sam Rivera     Product Manager (manager)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   DEVELOPERS (password: Dev@1234)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  liam.chen@iriba.app         Senior Frontend Developer
-  aisha.diallo@iriba.app      Backend Developer
-  carlos.mendoza@iriba.app    Full-Stack Developer
-  yuki.tanaka@iriba.app       Mobile Developer
-  fatima.alrashid@iriba.app   DevOps Engineer
-  noah.williams@iriba.app     Backend Developer
-  mei.lin@iriba.app            Frontend Developer
-  kofi.asante@iriba.app       QA Engineer
-  sofia.petrov@iriba.app      Full-Stack Developer
-  marcus.thompson@iriba.app   Senior Backend Developer
+  liam.chen@iribatech.com         Senior Frontend Developer
+  aisha.diallo@iribatech.com      Backend Developer
+  carlos.mendoza@iribatech.com    Full-Stack Developer
+  yuki.tanaka@iribatech.com       Mobile Developer
+  fatima.alrashid@iribatech.com   DevOps Engineer
+  noah.williams@iribatech.com     Backend Developer
+  mei.lin@iribatech.com            Frontend Developer
+  kofi.asante@iribatech.com       QA Engineer
+  sofia.petrov@iribatech.com      Full-Stack Developer
+  marcus.thompson@iribatech.com   Senior Backend Developer
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   5 projects · 3 sprints each · 10 issues each

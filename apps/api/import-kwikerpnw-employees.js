@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Employee-only import: kwikerpnw.sql → GKK ERP
+ * Employee-only import: kwikerpnw.sql → Iribatech
  *
  * Creates (or reuses) the KwikKoders company and imports people data only:
  *   1. Company
@@ -17,7 +17,7 @@
  *   node apps/api/import-kwikerpnw-employees.js
  *
  * Env: DB_HOST / DB_PORT / DB_USER / DB_PASSWORD / DB_NAME
- *      Falls back to kwikcomp / Kwikops@123 / gkkerp on localhost.
+ *      Falls back to kwikcomp / Kwikops@123 / iribatech on localhost.
  */
 
 const path = require('path');
@@ -251,7 +251,7 @@ const SRC_WORK_LOCATIONS = [
   { name: 'Home',                     type: 'home',   address: null                              },
   { name: 'Building 1, Second Floor', type: 'office', address: null                              },
   { name: 'Other',                    type: 'other',  address: null                              },
-  { name: 'GKK Office',               type: 'office', address: '17 KG 37 Avenue, Kigali, Rwanda' },
+  { name: 'Iribatech Office',               type: 'office', address: '17 KG 37 Avenue, Kigali, Rwanda' },
 ];
 
 // ── Main ──────────────────────────────────────────────────────────────────────
@@ -264,7 +264,7 @@ async function main() {
       port:     Number(process.env.DB_PORT || 3306),
       user:     process.env.DB_USER     || 'kwikcomp',
       password: process.env.DB_PASSWORD || 'Kwikops@123',
-      database: process.env.DB_NAME     || 'gkkerp',
+      database: process.env.DB_NAME     || 'iribatech',
     },
   });
 

@@ -13,7 +13,7 @@ async function main() {
       port:     Number(process.env.DB_PORT || 3306),
       user:     process.env.DB_USER     || 'kwikcomp',
       password: process.env.DB_PASSWORD || 'Kwikops@123',
-      database: process.env.DB_NAME     || 'gkkerp',
+      database: process.env.DB_NAME     || 'iribatech',
     },
   });
 

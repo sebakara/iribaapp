@@ -1,9 +1,9 @@
 'use strict';
 /**
- * Employee-only import from kwikerp.sql into the current GKK ERP database.
+ * Employee-only import from kwikerp.sql into the current Iribatech database.
  *
  * Imports departments, users, department managers, reports_to, and onboarding
- * fields into the company that owns the projects (not merely slug `gkk`).
+ * fields into the company that owns the projects (not merely slug `iribatech`).
  * Existing imported emails are moved into that workspace and attached to
  * their department. Company projects are assigned to R&D Department.
  * Does not create a database or send invites.
@@ -307,7 +307,7 @@ function dbConnection() {
   return {
     host: process.env.DB_HOST || 'localhost',
     port: Number(process.env.DB_PORT) || 3306,
-    database: process.env.DB_NAME || 'gkkerp',
+    database: process.env.DB_NAME || 'iribatech',
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
     ...(socketPath ? { socketPath } : {}),
@@ -335,7 +335,7 @@ async function resolveCompany(db) {
     }
   }
   const bySlug = async (slug) => db('companies').where({ slug }).first();
-  return (await bySlug('gkk'))
+  return (await bySlug('iribatech'))
     || (await bySlug('kwikkoders'))
     || db('companies').orderBy('created_at').first();
 }

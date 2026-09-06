@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Creates a demo super-admin account: admin@gkk.com / Admin@1234
+ * Creates a demo super-admin account: admin@iribatech.com / Admin@1234
  * Attaches to the first company found (KwikKoders after import).
  * Safe to run multiple times — skips if the email already exists.
  */
@@ -19,12 +19,12 @@ async function main() {
       port:     Number(process.env.DB_PORT || 3306),
       user:     process.env.DB_USER     || 'kwikcomp',
       password: process.env.DB_PASSWORD || 'Kwikops@123',
-      database: process.env.DB_NAME     || 'gkkerp',
+      database: process.env.DB_NAME     || 'iribatech',
     },
   });
 
   try {
-    const EMAIL = 'admin@gkk.com';
+    const EMAIL = 'admin@iribatech.com';
 
     const existing = await db('users').where({ email: EMAIL }).first();
     if (existing) {

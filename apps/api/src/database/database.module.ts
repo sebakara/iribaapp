@@ -16,7 +16,7 @@ export const KNEX_CONNECTION = 'KNEX_CONNECTION';
           connection: {
             host: config.get('DB_HOST', 'localhost'),
             port: config.get<number>('DB_PORT', 3306),
-            database: config.get('DB_NAME', 'gkkerp'),
+            database: config.get('DB_NAME', 'iribatech'),
             user: config.get('DB_USER', 'root'),
             password: config.get('DB_PASSWORD', ''),
             ...(socketPath ? { socketPath } : {}),

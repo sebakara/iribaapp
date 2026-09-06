@@ -1,6 +1,6 @@
-# GKK ERP — CompanyOS
+# Iribatech — Workspace
 
-A full-stack internal ERP system built for GKK Technologies. Covers project management (sprints, issues, kanban), HR (leave, performance reviews, leave packages), real-time notifications, and role-based access for admins, managers, and employees.
+A full-stack internal ERP system built for Iribatech. Covers project management (sprints, issues, kanban), HR (leave, performance reviews, leave packages), real-time notifications, and role-based access for admins, managers, and employees.
 
 ---
 
@@ -13,14 +13,14 @@ A full-stack internal ERP system built for GKK Technologies. Covers project mana
 | Real-time | WebSockets via Socket.IO |
 | Auth | JWT (passport-jwt), bcryptjs |
 | Drag & drop | @dnd-kit/core + @dnd-kit/sortable |
-| Infrastructure | Docker (MySQL + Redis), Nginx, PM2 |
+| Infrastructure | Docker (MySQL + Redis), Apache, PM2 |
 
 ---
 
 ## Project Structure
 
 ```
-gkkerp/
+iribaapp/
 ├── apps/
 │   ├── api/                  # NestJS backend
 │   │   └── src/
@@ -125,8 +125,8 @@ gkkerp/
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/sebakara/gkkerp.git
-cd gkkerp
+git clone https://github.com/sebakara/iribaapp.git
+cd iribaapp
 pnpm install
 ```
 
@@ -141,7 +141,7 @@ Edit `apps/api/.env` with your database credentials and a strong JWT secret:
 ```env
 DB_HOST=localhost
 DB_PORT=3306
-DB_NAME=gkkerp
+DB_NAME=iribaapp
 DB_USER=root
 DB_PASSWORD=your_password
 
@@ -180,7 +180,7 @@ pnpm db:seed
 ```
 
 This creates all tables and inserts:
-- 1 company (GKK Technologies)
+- 1 company (Iribatech ltd)
 - 4 departments with designated heads
 - 4 management users + 10 developer employees
 - 5 projects with 3 sprints and 10 issues each
@@ -193,8 +193,8 @@ This creates all tables and inserts:
 pnpm dev
 
 # Or separately
-pnpm --filter @gkkerp/api dev   # API on port 3001
-pnpm --filter @gkkerp/web dev   # Frontend on port 3000
+pnpm --filter @iribatech/api dev   # API on port 3001
+pnpm --filter @iribatech/web dev   # Frontend on port 3000
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
@@ -205,12 +205,12 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Role | Email | Password |
 |---|---|---|
-| Admin (CTO) | `admin@iriba.app` | `Admin@1234` |
-| CEO | `ceo@iriba.app` | `Admin@1234` |
-| HR Manager | `hr@iriba.app` | `Admin@1234` |
-| Product Manager | `product@iriba.app` | `Admin@1234` |
-| Developer | `liam.chen@iriba.app` | `Dev@1234` |
-| Developer | `aisha.diallo@iriba.app` | `Dev@1234` |
+| Admin (CTO) | `admin@iribatech.com` | `Admin@1234` |
+| CEO | `ceo@iribatech.com` | `Admin@1234` |
+| HR Manager | `hr@iribatech.com` | `Admin@1234` |
+| Product Manager | `product@iribatech.com` | `Admin@1234` |
+| Developer | `liam.chen@iribatech.com` | `Dev@1234` |
+| Developer | `aisha.diallo@iribatech.com` | `Dev@1234` |
 
 ---
 
@@ -285,4 +285,4 @@ All routes are prefixed with `/api`.
 
 ## License
 
-Private — GKK Technologies internal use only.
+Private — Iribatech internal use only.

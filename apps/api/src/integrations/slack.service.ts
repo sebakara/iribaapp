@@ -48,7 +48,7 @@ export class SlackService {
     await this.notificationsGateway.notifyUser(user.id, {
       type: 'slack_joined',
       title: 'You joined the Slack workspace',
-      body: 'Your GKK ERP account is now linked. Welcome aboard!',
+      body: 'Your Iribatech account is now linked. Welcome aboard!',
       data: { href: '/dashboard', slack_user_id: slackUser.id },
     });
 
