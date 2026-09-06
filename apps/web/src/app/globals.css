@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: #f3efe6;
+    --sidebar: #12201c;
+  }
+  body {
+    @apply bg-canvas text-ink antialiased;
+    font-family: var(--font-sans), system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+  .scrollbar-thin::-webkit-scrollbar-track { @apply bg-transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { @apply bg-sand-300 rounded-full; }
+}
+
+/* Tiptap prose styles */
+.prose h1 { @apply text-2xl font-bold text-ink mt-6 mb-3 font-serif; }
+.prose h2 { @apply text-xl font-bold text-ink mt-5 mb-2 font-serif; }
+.prose h3 { @apply text-lg font-semibold text-ink mt-4 mb-2; }
+.prose p { @apply text-ink/70 leading-relaxed mb-3; }
+.prose ul { @apply list-disc pl-5 mb-3 space-y-1; }
+.prose ol { @apply list-decimal pl-5 mb-3 space-y-1; }
+.prose li { @apply text-ink/70; }
+.prose blockquote { @apply border-l-4 border-primary-300 pl-4 italic text-ink/60 my-3; }
+.prose code { @apply bg-sand-200 text-primary-800 px-1.5 py-0.5 rounded text-sm font-mono; }
+.prose pre { @apply bg-ink text-sand-100 rounded-xl p-4 mb-4 overflow-x-auto; }
+.prose pre code { @apply bg-transparent text-sand-100 p-0; }
+.prose hr { @apply border-sand-200 my-5; }
+.prose strong { @apply font-semibold text-ink; }
+.prose em { @apply italic; }
+
+.ProseMirror {
+  outline: none;
+  min-height: 400px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #9a9284;
+  pointer-events: none;
+  height: 0;
+}

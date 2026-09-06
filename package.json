@@ -1,0 +1,17 @@
+{
+  "name": "gkkerp",
+  "private": true,
+  "packageManager": "pnpm@10.15.0",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @gkkerp/api --filter @gkkerp/web dev",
+    "build": "pnpm -r --if-present build",
+    "db:migrate": "pnpm --filter @gkkerp/api migrate",
+    "db:migrate:make": "pnpm --filter @gkkerp/api migrate:make",
+    "db:seed": "pnpm --filter @gkkerp/api seed",
+    "db:rollback": "pnpm --filter @gkkerp/api migrate:rollback"
+  }
+}

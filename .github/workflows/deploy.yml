@@ -1,0 +1,147 @@
+name: Deploy to app.iribatech.com
+
+on:
+  push:
+    branches: [main, master]
+
+jobs:
+  # Gate. `next build` loads postcss.config.js, so a compromised config executes
+  # on this runner alongside the deploy key — scan before anything is built.
+  security-scan:
+    uses: ./.github/workflows/security-malware-scan.yml
+
+  deploy:
+    needs: security-scan
+    if: ${{ needs.security-scan.result == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build API
+        run: pnpm --filter @gkkerp/api build
+
+      - name: Build Web
+        run: pnpm --filter @gkkerp/web build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:3001
+          NEXT_PUBLIC_WS_URL: https://app.iribatech.com
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          if [ -z "$SSH_KEY" ]; then
+            echo "ERROR: SSH_PRIVATE_KEY_PROD secret is not set in GitHub repository secrets."
+            exit 1
+          fi
+          echo "$SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          printf 'Host 64.225.100.156\n  User root\n  Port 22\n  StrictHostKeyChecking no\n  UserKnownHostsFile /dev/null\n  IdentityFile ~/.ssh/id_rsa\n' > ~/.ssh/config
+          chmod 600 ~/.ssh/config
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
+
+      - name: Prune to production dependencies
+        run: |
+          # pnpm prune can drop gitignored build output (dist / .next).
+          tar -cf /tmp/iriba-build.tar apps/api/dist apps/web/.next
+          test -f apps/api/dist/hr/standup-notes/standup-notes.controller.js
+          pnpm prune --prod
+          tar -xf /tmp/iriba-build.tar
+          test -f apps/api/dist/hr/standup-notes/standup-notes.controller.js
+          test -d apps/web/.next
+
+      - name: Verify server prerequisites
+        run: |
+          ssh root@64.225.100.156 '
+            set -e
+            export NVM_DIR="$HOME/.nvm"
+            [ ! -s "$NVM_DIR/nvm.sh" ] || . "$NVM_DIR/nvm.sh"
+            test -d /var/www/iribaapp
+            test -w /var/www/iribaapp
+            command -v pm2 >/dev/null
+          '
+
+      - name: Sync app to server
+        run: |
+          rsync -az --delete \
+            --exclude='.git' \
+            --exclude='apps/api/.env' \
+            --exclude='apps/api/.env.*' \
+            --exclude='apps/web/.env' \
+            --exclude='apps/web/.env.*' \
+            --exclude='apps/web/.next/cache' \
+            --exclude='uploads' \
+            ./ root@64.225.100.156:/var/www/iribaapp/
+
+      - name: Restart services
+        run: |
+          ssh root@64.225.100.156 bash -s <<'REMOTE'
+            set -e
+            export NVM_DIR="$HOME/.nvm"
+            [ ! -s "$NVM_DIR/nvm.sh" ] || . "$NVM_DIR/nvm.sh"
+
+            mkdir -p /var/www/iribaapp/uploads
+            cd /var/www/iribaapp
+            test -f apps/api/dist/hr/standup-notes/standup-notes.controller.js
+            test -f apps/api/dist/main.js
+
+            port=$(awk -F= '/^PORT=/{gsub(/"/, "", $2); print $2; exit}' apps/api/.env)
+            port=${port:-3001}
+
+            pm2 delete iriba-api iriba-web gkkerp-api gkkerp-web || true
+
+            echo "Listeners on :${port} before kill"
+            ss -lptn "sport = :${port}" || true
+            pgrep -af 'apps/api/dist/main.js' || true
+
+            sudo -n fuser -vk "${port}/tcp" || true
+            fuser -vk "${port}/tcp" || true
+            sudo -n pkill -9 -f '/var/www/iribaapp/apps/api/dist/main.js' || true
+            pkill -9 -f '/var/www/iribaapp/apps/api/dist/main.js' || true
+            sleep 2
+
+            echo "Listeners on :${port} after kill"
+            ss -lptn "sport = :${port}" || true
+            if ss -lptn "sport = :${port}" | grep -q LISTEN; then
+              echo "ERROR: :${port} is still in use. Need passwordless sudo to kill the leftover API process:"
+              echo "  sudo fuser -k ${port}/tcp"
+              sudo -n ss -lptn "sport = :${port}" || true
+              exit 1
+            fi
+
+            pm2 start ecosystem.config.js --update-env
+            pm2 save
+
+            code=""
+            i=0
+            while [ "$i" -lt 20 ]; do
+              i=$((i + 1))
+              sleep 2
+              code=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:${port}/api/hr/standup-notes" || true)
+              echo "attempt ${i} API :${port} /api/hr/standup-notes -> ${code}"
+              if [ "$code" = "401" ]; then
+                echo "Deploy complete"
+                exit 0
+              fi
+            done
+
+            echo "ERROR: standup-notes route is missing after deploy"
+            ss -lptn "sport = :${port}" || true
+            pm2 describe iriba-api || true
+            pm2 logs iriba-api --lines 80 --nostream || true
+            exit 1
+          REMOTE

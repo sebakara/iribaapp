@@ -1,0 +1,85 @@
+'use client';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useAuthStore } from '@/store/auth.store';
+import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
+import { chatApi } from '@/lib/api';
+import { useCommercialAccess } from '@/lib/use-commercial-access';
+import { BrandMark } from '@/components/brand/brand-mark';
+import {
+  LayoutDashboard, FolderOpen, Users, Bell, LogOut, Settings, MessageSquare,
+  Users2, Mail,
+} from 'lucide-react';
+
+const ALL_NAV = [
+  { label: 'Dashboard',     href: '/dashboard',     icon: LayoutDashboard, roles: ['admin', 'manager', 'employee', 'hr'] },
+  { label: 'Projects',      href: '/projects',      icon: FolderOpen,      roles: ['admin', 'manager', 'employee'] },
+  { label: 'HR',            href: '/hr',            icon: Users,           roles: ['admin', 'manager', 'employee', 'hr'] },
+  { label: 'Clients',       href: '/clients',       icon: Users2,          access: 'commercial' as const },
+  { label: 'Newsletters',   href: '/newsletters',   icon: Mail,            access: 'commercial' as const },
+  { label: 'Messages',      href: '/chat',          icon: MessageSquare,   roles: ['admin', 'manager', 'employee', 'hr'] },
+  { label: 'Notifications', href: '/notifications', icon: Bell,            roles: ['admin', 'manager', 'employee', 'hr'] },
+  { label: 'Settings',      href: '/settings',      icon: Settings,        roles: ['admin'] },
+];
+
+export function Sidebar() {
+  const pathname = usePathname();
+  const { user, logout } = useAuthStore();
+  const { allowed: commercial } = useCommercialAccess();
+  const nav = ALL_NAV.filter((item) => {
+    if ('access' in item && item.access === 'commercial') return commercial;
+    return !item.roles || !user?.role || item.roles.includes(user.role);
+  });
+
+  const { data: unreadData } = useQuery({
+    queryKey: ['chat-unread'],
+    queryFn: chatApi.getUnread,
+    refetchInterval: 10000,
+    enabled: !!user,
+  });
+  const chatUnread: number = (unreadData as any)?.count ?? 0;
+
+  return (
+    <aside className="w-60 bg-ink flex flex-col text-white shrink-0">
+      <div className="p-5 border-b border-white/10">
+        <BrandMark light />
+      </div>
+
+      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+        {nav.map(({ label, href, icon: Icon }) => (
+          <Link key={href} href={href}
+            className={cn(
+              'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
+              pathname === href || pathname.startsWith(href + '/')
+                ? 'bg-primary-600 text-white'
+                : 'text-white/60 hover:bg-white/8 hover:text-white',
+            )}>
+            <Icon size={17} />
+            <span className="flex-1">{href === '/hr' && user?.role === 'admin' ? 'People' : label}</span>
+            {href === '/chat' && chatUnread > 0 && (
+              <span className="bg-rose-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center">
+                {chatUnread > 9 ? '9+' : chatUnread}
+              </span>
+            )}
+          </Link>
+        ))}
+      </nav>
+
+      <div className="p-3 border-t border-white/10">
+        <Link href="/profile" className="flex items-center gap-2.5 px-2 py-2 mb-2 rounded-xl hover:bg-white/8 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-xs font-bold shrink-0">
+            {user?.first_name?.[0]}{user?.last_name?.[0]}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium truncate">{user?.first_name} {user?.last_name}</p>
+            <p className="text-xs text-white/45 capitalize">{user?.role}</p>
+          </div>
+        </Link>
+        <button onClick={logout} className="w-full flex items-center gap-2.5 px-3 py-2 text-white/50 hover:text-white hover:bg-white/8 rounded-xl text-sm transition-colors">
+          <LogOut size={16} /> Sign Out
+        </button>
+      </div>
+    </aside>
+  );
+}
