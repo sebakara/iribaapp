@@ -984,6 +984,7 @@ function EmployeesTab({ isManager, canCreateEmployees, currentUser }: { isManage
                 </button>
               </div>
             ) : (
+            <>
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -1064,6 +1065,7 @@ function EmployeesTab({ isManager, canCreateEmployees, currentUser }: { isManage
                 {createMutation.isPending ? 'Creating…' : 'Create account'}
               </button>
             </div>
+            </>
             )}
           </div>
         </div>
