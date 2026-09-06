@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Building2, Plus, Pencil, Trash2, Check, X } from 'lucide-react';
 import { companyApi, departmentsApi, usersApi } from '@/lib/api';
@@ -318,8 +319,14 @@ function MembersSection() {
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="px-5 py-4 border-b border-gray-100">
+      <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between gap-3">
         <h2 className="font-semibold text-gray-900">Members ({(employees as any[]).length})</h2>
+        <Link
+          href="/hr?tab=employees"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 text-white text-xs font-medium rounded-lg hover:bg-primary-700"
+        >
+          <Plus size={12} /> Add Employee
+        </Link>
       </div>
       <div className="divide-y divide-gray-100">
         {(employees as any[]).map((emp) => (

@@ -102,7 +102,7 @@ export default function HrPage() {
       </div>
 
       {tab === 'overview' && <OverviewTab isManager={isManager} isHr={isHr} user={user} />}
-      {tab === 'employees' && <EmployeesTab isManager={isManager} isHr={isHr} currentUser={user} />}
+      {tab === 'employees' && <EmployeesTab isManager={isManager} canCreateEmployees={isHr || isCeo} currentUser={user} />}
       {tab === 'standup-notes' && canUseStandupNotes && <StandupNotesTab />}
       {tab === 'leave-packages' && <LeavePackagesTab isHr={isHr} isCeo={isCeo} />}
       {tab === 'performance' && <PerformanceTab user={user} />}
@@ -826,7 +826,7 @@ function StandupNotesTab() {
 }
 
 /* ─── EMPLOYEES TAB ─────────────────────────────────────────────────────── */
-function EmployeesTab({ isManager, isHr, currentUser }: { isManager: boolean; isHr: boolean; currentUser: any }) {
+function EmployeesTab({ isManager, canCreateEmployees, currentUser }: { isManager: boolean; canCreateEmployees: boolean; currentUser: any }) {
   const qc = useQueryClient();
   const [search, setSearch] = useState('');
   const [deptFilter, setDeptFilter] = useState('all');
@@ -834,6 +834,7 @@ function EmployeesTab({ isManager, isHr, currentUser }: { isManager: boolean; is
   const [showAdd, setShowAdd] = useState(false);
   const [viewingEmp, setViewingEmp] = useState<any>(null);
   const [addForm, setAddForm] = useState({ first_name: '', last_name: '', email: '', role: 'employee', job_title: '', department_id: '' });
+  const [inviteResult, setInviteResult] = useState<{ url: string; emailSent: boolean } | null>(null);
 
   const { data: employees = [], isLoading } = useQuery({ queryKey: ['employees'], queryFn: usersApi.list });
   const { data: departments = [] } = useQuery({ queryKey: ['departments'], queryFn: departmentsApi.list });
@@ -841,11 +842,18 @@ function EmployeesTab({ isManager, isHr, currentUser }: { isManager: boolean; is
 
   const createMutation = useMutation({
     mutationFn: () => usersApi.create(addForm),
-    onSuccess: () => {
+    onSuccess: (created: any) => {
       qc.invalidateQueries({ queryKey: ['employees'] });
-      toast.success('Invite sent! Employee will receive an email to complete onboarding.');
-      setShowAdd(false);
       setAddForm({ first_name: '', last_name: '', email: '', role: 'employee', job_title: '', department_id: '' });
+      if (created?.invite_url) {
+        setInviteResult({ url: created.invite_url, emailSent: created.email_sent !== false });
+        toast.success(created.email_sent === false
+          ? 'Employee created. Share the invite link — email could not be sent.'
+          : 'Invite sent. You can also copy the onboarding link.');
+      } else {
+        toast.success('Invite sent! Employee will receive an email to complete onboarding.');
+        setShowAdd(false);
+      }
     },
     onError: (e: any) => toast.error(e?.response?.data?.message ?? 'Failed to create employee'),
   });
@@ -912,8 +920,8 @@ function EmployeesTab({ isManager, isHr, currentUser }: { isManager: boolean; is
           <option value="employee">Employee</option>
         </select>
         </>}
-        {isHr && (
-          <button onClick={() => setShowAdd(true)} className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors ml-auto">
+        {canCreateEmployees && (
+          <button onClick={() => { setInviteResult(null); setShowAdd(true); }} className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors ml-auto">
             <Plus size={14} /> Add Employee
           </button>
         )}
@@ -964,6 +972,37 @@ function EmployeesTab({ isManager, isHr, currentUser }: { isManager: boolean; is
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg">
             <h2 className="text-lg font-bold mb-5">Add Employee</h2>
+            {inviteResult ? (
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600">
+                  {inviteResult.emailSent
+                    ? 'An invitation email was sent. You can also share this onboarding link:'
+                    : 'The account was created, but email could not be sent. Share this onboarding link:'}
+                </p>
+                <input
+                  readOnly
+                  value={inviteResult.url}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs bg-gray-50"
+                />
+                <div className="flex gap-2 mt-2">
+                  <button
+                    onClick={() => { setShowAdd(false); setInviteResult(null); }}
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm"
+                  >
+                    Done
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(inviteResult.url);
+                      toast.success('Invite link copied');
+                    }}
+                    className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700"
+                  >
+                    Copy link
+                  </button>
+                </div>
+              </div>
+            ) : (
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -1041,7 +1080,7 @@ function EmployeesTab({ isManager, isHr, currentUser }: { isManager: boolean; is
               })()}
             </div>
             <div className="flex gap-2 mt-6">
-              <button onClick={() => setShowAdd(false)} className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm">Cancel</button>
+              <button onClick={() => { setShowAdd(false); setInviteResult(null); }} className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm">Cancel</button>
               <button
                 onClick={() => createMutation.mutate()}
                 disabled={!addForm.first_name || !addForm.last_name || !addForm.email || createMutation.isPending}
@@ -1050,6 +1089,7 @@ function EmployeesTab({ isManager, isHr, currentUser }: { isManager: boolean; is
                 {createMutation.isPending ? 'Sending invite…' : 'Send Invite'}
               </button>
             </div>
+            )}
           </div>
         </div>
       )}

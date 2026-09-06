@@ -105,7 +105,7 @@ jobs:
               port=${port:-3001}
             fi
 
-            pm2 delete iriba-api iriba-web iribatech-api iribatech-web || true
+            pm2 delete iriba-api iriba-web || true
 
             echo "Listeners on :${port} before kill"
             ss -lptn "sport = :${port}" || true

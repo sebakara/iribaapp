@@ -191,7 +191,7 @@ export class UsersService {
     return this.findById(id);
   }
 
-  // HR creates a placeholder user and sends invite email
+  // Admin or HR creates a placeholder user and sends invite email
   async createEmployee(companyId: string, data: {
     email: string;
     first_name: string;
@@ -248,14 +248,20 @@ export class UsersService {
     const frontendUrl = this.config.get('FRONTEND_URL', 'http://localhost:3000');
     const inviteUrl = `${frontendUrl}/onboarding?token=${token}`;
 
-    await this.mail.sendInvite({
-      to: data.email,
-      name: `${data.first_name} ${data.last_name}`,
-      companyName: company?.name ?? 'Your Company',
-      inviteUrl,
-    });
+    let email_sent = true;
+    try {
+      await this.mail.sendInvite({
+        to: data.email,
+        name: `${data.first_name} ${data.last_name}`,
+        companyName: company?.name ?? 'Your Company',
+        inviteUrl,
+      });
+    } catch {
+      email_sent = false;
+    }
 
-    return this.findByCompany(companyId).then((list) => list.find((u: any) => u.id === id));
+    const created = await this.findByCompany(companyId).then((list) => list.find((u: any) => u.id === id));
+    return { ...created, invite_url: inviteUrl, email_sent };
   }
 
   // Validate an invite token and return the pre-filled user info

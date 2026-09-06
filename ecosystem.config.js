@@ -10,8 +10,9 @@ module.exports = {
     },
     {
       name: 'iriba-web',
-      script: 'node_modules/next/dist/bin/next',
-      args: 'start -p 3000',
+      // pnpm hoists next to the repo root, not apps/web/node_modules
+      script: '/var/www/iribaapp/node_modules/next/dist/bin/next',
+      args: 'start -p 3002',
       cwd: '/var/www/iribaapp/apps/web',
       instances: 1,
       exec_mode: 'fork',
