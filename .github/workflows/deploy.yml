@@ -59,6 +59,7 @@ jobs:
           # pnpm prune can drop gitignored build output (dist / .next).
           tar -cf /tmp/iriba-build.tar apps/api/dist apps/web/.next
           test -f apps/api/dist/hr/standup-notes/standup-notes.controller.js
+          test -f apps/api/dist/database/migrations/011_password_resets.js
           pnpm prune --prod
           tar -xf /tmp/iriba-build.tar
           test -f apps/api/dist/hr/standup-notes/standup-notes.controller.js
@@ -98,7 +99,7 @@ jobs:
             cd /var/www/iribaapp
             test -f apps/api/dist/hr/standup-notes/standup-notes.controller.js
             test -f apps/api/dist/main.js
-            pnpm --filter @iribatech/api migrate
+            pnpm --filter @iribatech/api migrate:prod
 
             port=3001
             if [ -f apps/api/.env ]; then
