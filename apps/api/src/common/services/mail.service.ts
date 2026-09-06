@@ -29,9 +29,9 @@ export class MailService {
     <tr><td align="center">
       <table width="560" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08);">
         <tr>
-          <td style="background:#4f46e5;padding:32px 40px;">
-            <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;">Iribatech</h1>
-            <p style="margin:4px 0 0;color:#c7d2fe;font-size:14px;">Password Reset</p>
+          <td style="background:#1c6b5c;padding:32px 40px;">
+            <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;">Iriba</h1>
+            <p style="margin:4px 0 0;color:#c5ddd7;font-size:14px;">Password reset</p>
           </td>
         </tr>
         <tr>
@@ -43,7 +43,7 @@ export class MailService {
             </p>
             <table cellpadding="0" cellspacing="0">
               <tr>
-                <td style="background:#4f46e5;border-radius:8px;">
+                <td style="background:#1c6b5c;border-radius:8px;">
                   <a href="${opts.resetUrl}"
                      style="display:inline-block;padding:14px 32px;color:#fff;font-size:15px;font-weight:600;text-decoration:none;border-radius:8px;">
                     Reset Password →

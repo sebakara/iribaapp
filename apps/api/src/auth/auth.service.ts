@@ -67,6 +67,9 @@ export class AuthService {
   }
 
   async changePassword(userId: string, currentPassword: string, newPassword: string) {
+    if (!newPassword || newPassword.length < 8) {
+      throw new BadRequestException('Password must be at least 8 characters.');
+    }
     const user = await this.usersService.findById(userId);
     if (!user) throw new UnauthorizedException('User not found');
     const valid = await bcrypt.compare(currentPassword, user.password_hash);
@@ -94,19 +97,27 @@ export class AuthService {
       expires_at: expiresAt,
     });
 
-    const frontendUrl = this.config.get('FRONTEND_URL', 'http://localhost:3002');
+    const frontendUrl = this.config.get('FRONTEND_URL', 'http://localhost:3000');
     const resetUrl = `${frontendUrl}/reset-password?token=${token}`;
 
-    await this.mailService.sendPasswordReset({
-      to: user.email,
-      name: user.first_name,
-      resetUrl,
-    });
+    try {
+      await this.mailService.sendPasswordReset({
+        to: user.email,
+        name: user.first_name,
+        resetUrl,
+      });
+    } catch {
+      // Do not fail the request — SMTP is optional. The token is still valid.
+    }
 
     return { message: 'If that email exists, a reset link has been sent.' };
   }
 
   async resetPassword(token: string, newPassword: string) {
+    if (!newPassword || newPassword.length < 8) {
+      throw new BadRequestException('Password must be at least 8 characters.');
+    }
+
     const record = await this.knex('password_resets').where({ token }).whereNull('used_at').first();
 
     if (!record) throw new BadRequestException('Invalid or expired reset link.');

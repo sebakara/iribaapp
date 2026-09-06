@@ -33,7 +33,8 @@ export default function ForgotPasswordPage() {
         <div className="text-center space-y-3">
           <p className="text-ink font-medium">Check your inbox</p>
           <p className="text-ink/50 text-sm">
-            If <strong>{email}</strong> is registered, you&apos;ll receive a password reset link shortly.
+            If <strong>{email}</strong> is registered, we sent a reset link. It expires in 1 hour.
+            If it does not arrive, ask an admin to generate a link from People.
           </p>
           <Link href="/login" className="block mt-4 text-primary-700 font-medium text-sm hover:underline">
             ← Back to sign in

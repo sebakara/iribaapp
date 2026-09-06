@@ -180,6 +180,9 @@ export default function ProfilePage() {
       {/* Change password form */}
       {section === 'password' && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+          <p className="text-sm text-gray-500">
+            New accounts start with <span className="font-mono font-medium text-gray-700">12345678</span>. Use that as the current password if you have not changed it yet.
+          </p>
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1.5">Current password</label>
             <input

@@ -72,6 +72,13 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post(':id/password-reset')
+  @Roles(Role.Admin, Role.Hr)
+  createPasswordReset(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.usersService.createPasswordResetLink(id, user);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findById(id);

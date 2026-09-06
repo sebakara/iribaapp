@@ -191,7 +191,9 @@ export class UsersService {
     return this.findById(id);
   }
 
-  // Admin or HR creates a placeholder user and sends invite email
+  static readonly DEFAULT_PASSWORD = '12345678';
+
+  // Admin or HR creates an active user with the shared default password
   async createEmployee(companyId: string, data: {
     email: string;
     first_name: string;
@@ -203,8 +205,6 @@ export class UsersService {
     const existing = await this.findByEmail(data.email);
     if (existing) throw new ConflictException('Email already in use');
 
-    const company = await this.knex('companies').where({ id: companyId }).first();
-
     const role = data.role ?? 'employee';
     if (role === Role.Admin) {
       throw new ForbiddenException('Only an admin can create another admin');
@@ -214,7 +214,6 @@ export class UsersService {
       department_id = await ensureManagementDepartment(this.knex, companyId);
     }
 
-    // Look up the dept head to set as the reporting manager
     let reports_to: string | null = null;
     if (department_id) {
       const dept = await this.knex('departments').where({ id: department_id }).first();
@@ -222,8 +221,7 @@ export class UsersService {
     }
 
     const id = uuid();
-    // Placeholder password — employee sets their own during onboarding
-    const password_hash = await bcrypt.hash(uuid(), 10);
+    const password_hash = await bcrypt.hash(UsersService.DEFAULT_PASSWORD, 10);
 
     await this.knex('users').insert({
       id,
@@ -236,32 +234,11 @@ export class UsersService {
       job_title: data.job_title ?? null,
       department_id,
       reports_to,
-      is_active: false,
-      onboarding_completed: false,
+      is_active: true,
+      onboarding_completed: true,
     });
 
-    // Create invite token (valid 7 days)
-    const token = crypto.randomBytes(32).toString('hex');
-    const expires_at = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    await this.knex('invites').insert({ id: uuid(), user_id: id, token, expires_at });
-
-    const frontendUrl = this.config.get('FRONTEND_URL', 'http://localhost:3000');
-    const inviteUrl = `${frontendUrl}/onboarding?token=${token}`;
-
-    let email_sent = true;
-    try {
-      await this.mail.sendInvite({
-        to: data.email,
-        name: `${data.first_name} ${data.last_name}`,
-        companyName: company?.name ?? 'Your Company',
-        inviteUrl,
-      });
-    } catch {
-      email_sent = false;
-    }
-
-    const created = await this.findByCompany(companyId).then((list) => list.find((u: any) => u.id === id));
-    return { ...created, invite_url: inviteUrl, email_sent };
+    return this.findByCompany(companyId).then((list) => list.find((u: any) => u.id === id));
   }
 
   // Validate an invite token and return the pre-filled user info
@@ -312,6 +289,47 @@ export class UsersService {
     await this.knex('invites').where({ id: invite.id }).update({ used: true });
 
     return { success: true };
+  }
+
+  async createPasswordResetLink(id: string, actor: UserActor) {
+    const user = await this.findById(id);
+    if (!user) throw new NotFoundException('User not found');
+    if (user.company_id !== actor.company_id) {
+      throw new ForbiddenException('You cannot update this person');
+    }
+    if (actor.role !== Role.Admin && actor.role !== Role.Hr) {
+      throw new ForbiddenException('Only an admin or HR can create a reset link');
+    }
+    if (user.role === Role.Admin && actor.role !== Role.Admin) {
+      throw new ForbiddenException('You cannot reset an admin password');
+    }
+
+    await this.knex('password_resets').where({ user_id: user.id }).whereNull('used_at').delete();
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expires_at = new Date(Date.now() + 60 * 60 * 1000);
+    await this.knex('password_resets').insert({
+      id: uuid(),
+      user_id: user.id,
+      token,
+      expires_at,
+    });
+
+    const frontendUrl = this.config.get('FRONTEND_URL', 'http://localhost:3000');
+    const reset_url = `${frontendUrl}/reset-password?token=${token}`;
+
+    let email_sent = true;
+    try {
+      await this.mail.sendPasswordReset({
+        to: user.email,
+        name: user.first_name,
+        resetUrl: reset_url,
+      });
+    } catch {
+      email_sent = false;
+    }
+
+    return { reset_url, email_sent, email: user.email };
   }
 
   async remove(id: string, actor: UserActor) {

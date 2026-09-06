@@ -98,6 +98,7 @@ jobs:
             cd /var/www/iribaapp
             test -f apps/api/dist/hr/standup-notes/standup-notes.controller.js
             test -f apps/api/dist/main.js
+            pnpm --filter @iribatech/api migrate
 
             port=3001
             if [ -f apps/api/.env ]; then
